@@ -480,13 +480,13 @@ def get_bench_beats_starters_string(league_id):
         all_players = matchup["players"]
         bench = set(all_players) - set(starters)
 
-def test_message(message):
-    """
-    Test function to send a message.
-    :param message: The message to send
-    :return: None
-    """
-    return message
+# def test_message(message):
+#     """
+#     Test function to send a message.
+#     :param message: The message to send
+#     :return: None
+#     """
+#     return message
 
 async def send_scheduled_message(scheduled_channel, message_func, *args):
         if scheduled_channel is not None:
@@ -494,15 +494,12 @@ async def send_scheduled_message(scheduled_channel, message_func, *args):
 
 async def on_ready_and_schedule(bot):
     scheduled_channel = await bot.fetch_channel(channel_id)
-    print(f"Scheduled channel: {scheduled_channel}")
     if scheduled_channel is None:
         print(f"Could not find channel with ID {channel_id}")
         return
     # Send initial welcome message
     await scheduled_channel.send(get_welcome_string())
 
-    #test scheduler
-    schedule.every(60).seconds.do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, test_message, "This is a test message!")))
     # Schedule jobs
     schedule.every().thursday.at("19:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_matchups_string, league_id)))
     schedule.every().friday.at("12:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_scores_string, league_id)))
@@ -511,11 +508,9 @@ async def on_ready_and_schedule(bot):
     schedule.every().tuesday.at("15:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_standings_string, league_id)))
     schedule.every().tuesday.at("15:01").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_best_and_worst_string, league_id)))
 
-    print(schedule.jobs)
-
 async def run_scheduler():
     while True:
-        if starting_date >= pendulum.today():
+        if starting_date <= pendulum.today():
             schedule.run_pending()
         await asyncio.sleep(50)
 
@@ -532,7 +527,6 @@ async def run_discord_bot():
         print(f'Logged in as {bot.user.name} - {bot.user.id}')
         print('------')
         await asyncio.sleep(60)
-        print("post sleep")
         await on_ready_and_schedule(bot)
         
     @bot.command()
