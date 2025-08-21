@@ -544,10 +544,12 @@ async def run_discord_bot():
 
             # Find matching player
             matched_player = None
+            player_full_name = None
             for pid, pdata in players.items():
                 full_name = pdata.get("full_name", "").lower()
                 if player_name in full_name:
                     matched_player = pid
+                    player_full_name = full_name
                     break
 
             if not matched_player:
@@ -564,10 +566,10 @@ async def run_discord_bot():
                     owner_id = roster["owner_id"]
                     owner = next((u for u in users if u["user_id"] == owner_id), None)
                     team_name = owner.get("display_name", "Unknown Team") if owner else "Unknown Team"
-                    await ctx.send(f"🔍 {player_name.title()} is rostered by **{team_name}**")
+                    await ctx.send(f"🔍 {player_full_name} is rostered by **{team_name}**")
                     return
 
-            await ctx.send(f"🔓 {player_name.title()} is currently a free agent.")
+            await ctx.send(f"🔓 {player_full_name} is currently a free agent.")
         except Exception as e:
             await ctx.send(f"⚠️ Error checking ownership: {e}")
 
