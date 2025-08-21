@@ -2,9 +2,10 @@ import schedule
 import time
 import os
 import pendulum
-from group_me import GroupMe
-from slack import Slack
-from discord import Discord
+import discord
+import asyncio
+from discord.ext import commands
+from discord_sender import Discord
 from sleeper_wrapper import League, Stats, Players
 from constants import STARTING_MONTH, STARTING_YEAR, STARTING_DAY, START_DATE_STRING
 
@@ -480,6 +481,33 @@ def get_bench_beats_starters_string(league_id):
         bench = set(all_players) - set(starters)
 
 
+async def run_scheduler():
+    while True:
+        if starting_date <= pendulum.today():
+            schedule.run_pending()
+        await asyncio.sleep(50)
+
+async def run_discord_bot():
+    intents = discord.Intents.default()
+    intents.message_content = True
+
+    bot = commands.Bot(command_prefix="!", intents=intents)
+
+    @bot.command()
+    async def status(ctx):
+        await ctx.send("Bot is running ✅")
+
+    await bot.start(os.environ("TOKEN"))
+
+
+async def main():
+    await asyncio.gather(
+        run_scheduler(),
+        run_discord_bot()
+    )
+
+
+
 if __name__ == "__main__":
     """
     Main script for the bot
@@ -497,13 +525,7 @@ if __name__ == "__main__":
 
     starting_date = pendulum.datetime(STARTING_YEAR, STARTING_MONTH, STARTING_DAY)
 
-    if bot_type == "groupme":
-        bot_id = os.environ["BOT_ID"]
-        bot = GroupMe(bot_id)
-    elif bot_type == "slack":
-        webhook = os.environ["SLACK_WEBHOOK"]
-        bot = Slack(webhook)
-    elif bot_type == "discord":
+    if bot_type == "discord":
         webhook = os.environ["DISCORD_WEBHOOK"]
         bot = Discord(webhook)
 
@@ -519,7 +541,4 @@ if __name__ == "__main__":
     schedule.every().tuesday.at("15:01").do(bot.send, get_best_and_worst_string,
                                             league_id)  # Standings Tuesday at 11:01 am ET
 
-    while True:
-        if starting_date <= pendulum.today():
-            schedule.run_pending()
-        time.sleep(50)
+    asyncio.run(main())  # Run the discord bot and scheduler concurrently

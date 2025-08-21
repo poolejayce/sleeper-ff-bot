@@ -9,8 +9,6 @@
     "fantasy-football",
     "Python",
     "Heroku",
-    "Groupme",
-    "Slack",
     "Discord"
   ],
   "env": {
@@ -39,6 +37,10 @@
     },
     "DISCORD_WEBHOOK": {
       "description": "The Discord Webhook. Required if the bot type is discord.",
+      "value": "1"
+    },
+    "TOKEN": {
+      "description": "The Discord Bot Token. Required if the bot type is discord.",
       "value": "1"
     }
   }
