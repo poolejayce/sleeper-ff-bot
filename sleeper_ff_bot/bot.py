@@ -528,16 +528,6 @@ async def run_discord_bot():
         print('------')
         await asyncio.sleep(60)
         await on_ready_and_schedule(bot)
-
-    @bot.command()
-    async def help(ctx):
-        help_text = """
-        📘 **Fantasy Bot Commands**
-
-        `!whohas <player name>` – Find out which team owns a specific player
-        """
-        await ctx.send(help_text)
-
         
     @bot.command()
     async def status(ctx):
