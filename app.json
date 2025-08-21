@@ -42,6 +42,10 @@
     "TOKEN": {
       "description": "The Discord Bot Token. Required if the bot type is discord.",
       "value": "1"
+    },
+    "FF_CHANNEL_ID": {
+      "description": "The Discord Fantasy Football Channel ID. Required if the bot type is discord.",
+      "value": "1"
     }
   }
 }

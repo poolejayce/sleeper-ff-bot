@@ -480,6 +480,34 @@ def get_bench_beats_starters_string(league_id):
         all_players = matchup["players"]
         bench = set(all_players) - set(starters)
 
+def test_message(message):
+    """
+    Test function to send a message.
+    :param message: The message to send
+    :return: None
+    """
+    return message
+
+async def send_scheduled_message(scheduled_channel, message_func, *args):
+        if scheduled_channel is not None:
+            await scheduled_channel.send(message_func(*args))
+
+async def on_ready_and_schedule():
+    scheduled_channel = bot.get_channel(channel_id)
+    if scheduled_channel is None:
+        print(f"Could not find channel with ID {channel_id}")
+        return
+    # Send initial welcome message
+    await scheduled_channel.send(get_welcome_string())
+
+    # Schedule jobs
+    schedule.every().thursday.at("19:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_matchups_string, league_id)))
+    schedule.every().thursday.at("21:40").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, test_message, "Test scheduled messages work with bot")))
+    schedule.every().friday.at("12:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_scores_string, league_id)))
+    schedule.every().sunday.at("23:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_close_games_string, league_id, int(close_num))))
+    schedule.every().monday.at("12:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_scores_string, league_id)))
+    schedule.every().tuesday.at("15:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_standings_string, league_id)))
+    schedule.every().tuesday.at("15:01").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_best_and_worst_string, league_id)))
 
 async def run_scheduler():
     while True:
@@ -495,6 +523,13 @@ async def run_discord_bot():
 
     bot = commands.Bot(command_prefix="!", intents=intents)
 
+    @bot.event()
+    async def on_ready():
+        print(f'Logged in as {bot.user.name} - {bot.user.id}')
+        print('------')
+        asyncio.sleep(5)
+        await on_ready_and_schedule()
+        
     @bot.command()
     async def status(ctx):
         await ctx.send("Bot is running ✅")
@@ -518,6 +553,7 @@ if __name__ == "__main__":
 
     bot_type = os.environ["BOT_TYPE"]
     league_id = os.environ["LEAGUE_ID"]
+    channel_id = os.environ["FF_CHANNEL_ID"]
 
     # Check if the user specified the close game num. Default is 20.
     try:
@@ -527,20 +563,20 @@ if __name__ == "__main__":
 
     starting_date = pendulum.datetime(STARTING_YEAR, STARTING_MONTH, STARTING_DAY)
 
-    if bot_type == "discord":
-        webhook = os.environ["DISCORD_WEBHOOK"]
-        bot = Discord(webhook)
+    # if bot_type == "discord":
+    #     webhook = os.environ["DISCORD_WEBHOOK"]
+    #     bot = Discord(webhook)
 
-    bot.send(get_welcome_string)  # inital message to send
-    schedule.every().thursday.at("19:00").do(bot.send, get_matchups_string,
-                                             league_id)  # Matchups Thursday at 4:00 pm ET
-    schedule.every().friday.at("12:00").do(bot.send, get_scores_string, league_id)  # Scores Friday at 12 pm ET
-    schedule.every().sunday.at("23:00").do(bot.send, get_close_games_string, league_id,
-                                           int(close_num))  # Close games Sunday on 7:00 pm ET
-    schedule.every().monday.at("12:00").do(bot.send, get_scores_string, league_id)  # Scores Monday at 12 pm ET
-    schedule.every().tuesday.at("15:00").do(bot.send, get_standings_string,
-                                            league_id)  # Standings Tuesday at 11:00 am ET
-    schedule.every().tuesday.at("15:01").do(bot.send, get_best_and_worst_string,
-                                            league_id)  # Standings Tuesday at 11:01 am ET
+    # bot.send(get_welcome_string)  # inital message to send
+    # schedule.every().thursday.at("19:00").do(bot.send, get_matchups_string,
+    #                                          league_id)  # Matchups Thursday at 4:00 pm ET
+    # schedule.every().friday.at("12:00").do(bot.send, get_scores_string, league_id)  # Scores Friday at 12 pm ET
+    # schedule.every().sunday.at("23:00").do(bot.send, get_close_games_string, league_id,
+    #                                        int(close_num))  # Close games Sunday on 7:00 pm ET
+    # schedule.every().monday.at("12:00").do(bot.send, get_scores_string, league_id)  # Scores Monday at 12 pm ET
+    # schedule.every().tuesday.at("15:00").do(bot.send, get_standings_string,
+    #                                         league_id)  # Standings Tuesday at 11:00 am ET
+    # schedule.every().tuesday.at("15:01").do(bot.send, get_best_and_worst_string,
+    #                                         league_id)  # Standings Tuesday at 11:01 am ET
 
     asyncio.run(main())  # Run the discord bot and scheduler concurrently
