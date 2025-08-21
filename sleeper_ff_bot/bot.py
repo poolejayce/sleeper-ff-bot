@@ -492,7 +492,7 @@ async def send_scheduled_message(scheduled_channel, message_func, *args):
         if scheduled_channel is not None:
             await scheduled_channel.send(message_func(*args))
 
-async def on_ready_and_schedule():
+async def on_ready_and_schedule(bot):
     scheduled_channel = bot.get_channel(channel_id)
     print(f"Scheduled channel: {scheduled_channel}")
     if scheduled_channel is None:
@@ -503,7 +503,7 @@ async def on_ready_and_schedule():
 
     # Schedule jobs
     schedule.every().thursday.at("19:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_matchups_string, league_id)))
-    schedule.every().thursday.at("21:48").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, test_message, "Test scheduled messages work with bot")))
+    schedule.every().thursday.at("21:55").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, test_message, "Test scheduled messages work with bot")))
     schedule.every().friday.at("12:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_scores_string, league_id)))
     schedule.every().sunday.at("23:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_close_games_string, league_id, int(close_num))))
     schedule.every().monday.at("12:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_scores_string, league_id)))
@@ -530,7 +530,7 @@ async def run_discord_bot():
         print('------')
         await asyncio.sleep(5)
         print("post sleep")
-        await on_ready_and_schedule()
+        await on_ready_and_schedule(bot)
         
     @bot.command()
     async def status(ctx):
