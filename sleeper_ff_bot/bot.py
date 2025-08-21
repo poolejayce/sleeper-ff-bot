@@ -528,10 +528,58 @@ async def run_discord_bot():
         print('------')
         await asyncio.sleep(60)
         await on_ready_and_schedule(bot)
+
+    @bot.command()
+    async def help(ctx):
+        help_text = """
+        📘 **Fantasy Bot Commands**
+
+        `!whohas <player name>` – Find out which team owns a specific player
+        """
+        await ctx.send(help_text)
+
         
     @bot.command()
     async def status(ctx):
         await ctx.send("Bot is running ✅")
+
+    @bot.command()
+    async def whohas(ctx, *, player_name: str):
+        try:
+            league = League(league_id)
+            players = Players().get_all_players()
+
+            # Normalize input
+            player_name = player_name.lower()
+
+            # Find matching player
+            matched_player = None
+            for pid, pdata in players.items():
+                full_name = pdata.get("full_name", "").lower()
+                if player_name in full_name:
+                    matched_player = pid
+                    break
+
+            if not matched_player:
+                await ctx.send(f"❌ Couldn't find a player matching '{player_name}'")
+                return
+
+            # Get rosters and users
+            rosters = league.get_rosters()
+            users = league.get_users()
+
+            # Find owner
+            for roster in rosters:
+                if matched_player in roster.get("players", []):
+                    owner_id = roster["owner_id"]
+                    owner = next((u for u in users if u["user_id"] == owner_id), None)
+                    team_name = owner.get("display_name", "Unknown Team") if owner else "Unknown Team"
+                    await ctx.send(f"🔍 {player_name.title()} is rostered by **{team_name}**")
+                    return
+
+            await ctx.send(f"🔓 {player_name.title()} is currently a free agent.")
+        except Exception as e:
+            await ctx.send(f"⚠️ Error checking ownership: {e}")
 
     await bot.start(os.environ["TOKEN"])
 
