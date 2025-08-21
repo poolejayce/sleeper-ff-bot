@@ -493,7 +493,7 @@ async def send_scheduled_message(scheduled_channel, message_func, *args):
             await scheduled_channel.send(message_func(*args))
 
 async def on_ready_and_schedule(bot):
-    scheduled_channel = bot.get_channel(channel_id)
+    scheduled_channel = await bot.fetch_channel(channel_id)
     print(f"Scheduled channel: {scheduled_channel}")
     if scheduled_channel is None:
         print(f"Could not find channel with ID {channel_id}")
@@ -528,7 +528,7 @@ async def run_discord_bot():
     async def on_ready():
         print(f'Logged in as {bot.user.name} - {bot.user.id}')
         print('------')
-        await asyncio.sleep(5)
+        await asyncio.sleep(60)
         print("post sleep")
         await on_ready_and_schedule(bot)
         
