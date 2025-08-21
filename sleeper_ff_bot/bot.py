@@ -535,6 +535,7 @@ async def run_discord_bot():
 
     @bot.command()
     async def whohas(ctx, *, player_name: str):
+        """Find out which fantasy team owns a specific player or if they are a free agent"""
         try:
             league = League(league_id)
             players = Players().get_all_players()
