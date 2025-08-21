@@ -515,7 +515,7 @@ async def on_ready_and_schedule(bot):
 
 async def run_scheduler():
     while True:
-        if starting_date <= pendulum.today():
+        if starting_date >= pendulum.today():
             schedule.run_pending()
         await asyncio.sleep(50)
 
