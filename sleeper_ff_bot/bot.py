@@ -501,9 +501,11 @@ async def on_ready_and_schedule(bot):
     # Send initial welcome message
     await scheduled_channel.send(get_welcome_string())
 
+    #test scheduler
+    schedule.every().second.at(":15").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, test_message, "This is a test message!")))
+
     # Schedule jobs
     schedule.every().thursday.at("19:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_matchups_string, league_id)))
-    schedule.every().thursday.at("21:55").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, test_message, "Test scheduled messages work with bot")))
     schedule.every().friday.at("12:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_scores_string, league_id)))
     schedule.every().sunday.at("23:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_close_games_string, league_id, int(close_num))))
     schedule.every().monday.at("12:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_scores_string, league_id)))
