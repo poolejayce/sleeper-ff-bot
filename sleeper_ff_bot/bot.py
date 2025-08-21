@@ -295,9 +295,9 @@ def get_welcome_string():
     """
     welcome_message = "👋 Hello, I am Sleeper Bot! \n\nThe bot schedule for the {} ff season can be found here: ".format(
         STARTING_YEAR)
-    welcome_message += "https://github.com/poolejayce/sleeper-ff-bot#current-schedule \n\n"
+    welcome_message += "https://github.com/suckaslim/sleeper-ff-bot#current-schedule \n\n"
     welcome_message += "Any feature requests, contributions, or issues for the bot can be added here: " \
-                       "https://github.com/poolejayce/sleeper-ff-bot# \n\n"
+                       "https://github.com/suckaslim/sleeper-ff-bot# \n\n"
 
     return welcome_message
 
@@ -490,6 +490,8 @@ async def run_scheduler():
 async def run_discord_bot():
     intents = discord.Intents.default()
     intents.message_content = True
+    intents.messages = True
+    intents.guilds = True
 
     bot = commands.Bot(command_prefix="!", intents=intents)
 
