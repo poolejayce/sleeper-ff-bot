@@ -510,6 +510,8 @@ async def on_ready_and_schedule(bot):
     schedule.every().tuesday.at("15:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_standings_string, league_id)))
     schedule.every().tuesday.at("15:01").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_best_and_worst_string, league_id)))
 
+    print(schedule.jobs)
+
 async def run_scheduler():
     while True:
         if starting_date <= pendulum.today():
