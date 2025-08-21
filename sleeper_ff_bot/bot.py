@@ -554,7 +554,10 @@ async def run_discord_bot():
                     break
 
             if not matched_player:
-                await ctx.send(f"❌ Couldn't find a player matching '{player_name}'")
+                bot_msg = await ctx.send(f"❌ Couldn't find a player matching '{player_name}'")
+                await asyncio.sleep(600)
+                await bot_msg.delete()
+                await ctx.message.delete()
                 return
 
             # Get rosters and users
@@ -567,12 +570,21 @@ async def run_discord_bot():
                     owner_id = roster["owner_id"]
                     owner = next((u for u in users if u["user_id"] == owner_id), None)
                     team_name = owner.get("display_name", "Unknown Team") if owner else "Unknown Team"
-                    await ctx.send(f"🔍 {player_full_name} is rostered by **{team_name}**")
+                    bot_msg = await ctx.send(f"🔍 {player_full_name} is rostered by **{team_name}**")
+                    await asyncio.sleep(600)
+                    await bot_msg.delete()
+                    await ctx.message.delete()
                     return
 
-            await ctx.send(f"🔓 {player_full_name} is currently a free agent.")
+            bot_msg = await ctx.send(f"🔓 {player_full_name} is currently a free agent.")
+            await asyncio.sleep(600)
+            await bot_msg.delete()
+            await ctx.message.delete()
         except Exception as e:
-            await ctx.send(f"⚠️ Error checking ownership: {e}")
+            bot_msg = await ctx.send(f"⚠️ Error checking ownership: {e}")
+            await asyncio.sleep(600)
+            await bot_msg.delete()
+            await ctx.message.delete()
 
     await bot.start(os.environ["TOKEN"])
 
