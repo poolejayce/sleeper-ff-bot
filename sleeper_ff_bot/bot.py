@@ -502,7 +502,7 @@ async def on_ready_and_schedule():
 
     # Schedule jobs
     schedule.every().thursday.at("19:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_matchups_string, league_id)))
-    schedule.every().thursday.at("21:40").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, test_message, "Test scheduled messages work with bot")))
+    schedule.every().thursday.at("21:42").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, test_message, "Test scheduled messages work with bot")))
     schedule.every().friday.at("12:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_scores_string, league_id)))
     schedule.every().sunday.at("23:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_close_games_string, league_id, int(close_num))))
     schedule.every().monday.at("12:00").do(lambda: asyncio.create_task(send_scheduled_message(scheduled_channel, get_scores_string, league_id)))
@@ -523,7 +523,7 @@ async def run_discord_bot():
 
     bot = commands.Bot(command_prefix="!", intents=intents)
 
-    @bot.event()
+    @bot.event
     async def on_ready():
         print(f'Logged in as {bot.user.name} - {bot.user.id}')
         print('------')
