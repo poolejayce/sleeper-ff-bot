@@ -532,6 +532,9 @@ async def run_discord_bot():
     @bot.command()
     async def status(ctx):
         await ctx.send("Bot is running ✅")
+        bot_msg = await asyncio.sleep(600)
+        await bot_msg.delete()
+        await ctx.message.delete()
 
     @bot.command()
     async def whohas(ctx, *, player_name: str):
